@@ -1,0 +1,11 @@
+sqlw_dwh_profile:
+  outputs:
+    dev:
+      type: sqlserver
+      driver: 'ODBC Driver 17 for SQL Server'
+      server: 'localhost\SQLEXPRESS'
+      port: 1433
+      database: DataWarehouse
+      schema: dbo
+      trusted_connection: true
+  target: dev

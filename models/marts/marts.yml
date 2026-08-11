@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: "Final dimension model containing enriched customer profiles"
+    columns:
+      - name: customer_key
+        description: "MD5 hash surrogate key uniquely identifying each customer"
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_products
+    description: "Final dimension model containing historical versions of products (SCD Type 2)"
+    columns:
+      - name: product_key
+        description: "MD5 hash surrogate key uniquely identifying each product version record"
+        tests:
+          - unique
+          - not_null
+
+  - name: fact_sales
+    description: "Fact table mapping transaction items to customer and product dimensions"
+    columns:
+      - name: order_number
+        description: "Sales order identifier"
+        tests:
+          - not_null
+
+      - name: customer_key
+        description: "Surrogate key reference to dim_customers"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_key
+
+      - name: product_key
+        description: "Surrogate key reference to dim_products"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_key

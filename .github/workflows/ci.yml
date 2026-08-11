@@ -1,0 +1,56 @@
+name: DataOps CI Pipeline
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint-and-test:
+    name: Lint SQL and Run dbt Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Python Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install dbt-sqlserver sqlfluff-templater-dbt
+
+      - name: Run SQLFluff Linting
+        run: |
+          sqlfluff lint models/
+
+      - name: Setup dbt Profile Config
+        run: |
+          mkdir -p ~/.dbt
+          cat <<EOF > ~/.dbt/profiles.yml
+          sqlw_dwh_profile:
+            outputs:
+              dev:
+                type: sqlserver
+                driver: 'ODBC Driver 17 for SQL Server'
+                server: '${{ secrets.DB_SERVER }}'
+                port: 1433
+                database: '${{ secrets.DB_DATABASE }}'
+                schema: 'dbt_ci_pr_${{ github.event.number }}'
+                user: '${{ secrets.DB_USER }}'
+                password: '${{ secrets.DB_PASSWORD }}'
+                trust_cert: true
+            target: dev
+          EOF
+
+      - name: Install dbt Packages
+        run: |
+          dbt deps
+
+      - name: Run dbt Slim CI Build
+        run: |
+          # Build only modified models and their downstreams to save time and compute cost
+          dbt build --select state:modified+ --defer --state ./target

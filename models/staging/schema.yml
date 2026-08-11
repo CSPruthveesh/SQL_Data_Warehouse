@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: stg_crm_cust_info
+    description: "Cleaned and deduped customer records from CRM source"
+    columns:
+      - name: cst_id
+        description: "Primary key for customer records"
+        tests:
+          - unique
+          - not_null
+
+      - name: cst_key
+        description: "Integration key linking CRM to ERP customer systems"
+        tests:
+          - not_null
+
+  - name: stg_crm_prd_info
+    description: "Cleaned product details from CRM source"
+    columns:
+      - name: prd_id
+        description: "Internal product unique identifier"
+        tests:
+          - unique
+          - not_null
+
+      - name: prd_key
+        description: "Unique product business code"
+        tests:
+          - not_null
+
+  - name: stg_crm_sales_details
+    description: "Sales transactions from CRM source"
+    columns:
+      - name: sls_ord_num
+        description: "Order identifier number"
+        tests:
+          - not_null
+
+      - name: sls_quantity
+        description: "Quantity of items ordered"
+        tests:
+          - not_null
+
+      - name: sls_sales
+        description: "Total sales amount"
+        tests:
+          - not_null
+
+  - name: stg_erp_cust_az12
+    description: "Customer demographic details from ERP source"
+    columns:
+      - name: cid
+        description: "Customer integration identifier"
+        tests:
+          - not_null
+
+  - name: stg_erp_loc_a101
+    description: "Geographic mappings from ERP source"
+    columns:
+      - name: cid
+        description: "Customer integration identifier"
+        tests:
+          - not_null

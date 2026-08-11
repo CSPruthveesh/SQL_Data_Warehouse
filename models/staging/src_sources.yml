@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: raw_crm
+    description: "Raw CRM source data loaded into the bronze schema"
+    schema: bronze
+    tables:
+      - name: crm_cust_info
+        description: "Customer demographic information"
+      - name: crm_prd_info
+        description: "Product information"
+      - name: crm_sales_details
+        description: "Customer sales details and transactions"
+
+  - name: raw_erp
+    description: "Raw ERP source data loaded into the bronze schema"
+    schema: bronze
+    tables:
+      - name: erp_loc_a101
+        description: "Customer location data"
+      - name: erp_cust_az12
+        description: "Additional customer details"
+      - name: erp_px_cat_g1v2
+        description: "Product categories and subcategories"

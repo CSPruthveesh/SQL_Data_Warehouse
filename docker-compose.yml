@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  postgres-sandbox:
+    image: postgres:15-alpine
+    container_name: dwh_postgres_dev
+    environment:
+      POSTGRES_DB: DataWarehouse
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./datasets:/tmp/datasets
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev_user -d DataWarehouse"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

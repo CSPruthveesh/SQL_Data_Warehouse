@@ -11,7 +11,7 @@ The Gold Layer is the business-level data representation, structured to support 
 
 | Column Name      | Data Type     | Description                                                                                   |
 |------------------|---------------|-----------------------------------------------------------------------------------------------|
-| customer_key     | INT           | Surrogate key uniquely identifying each customer record in the dimension table.               |
+| customer_key     | NVARCHAR(32)  | Deterministic MD5 hash key uniquely identifying each customer record in the dimension table.   |
 | customer_id      | INT           | Unique numerical identifier assigned to each customer.                                        |
 | customer_number  | NVARCHAR(50)  | Alphanumeric identifier representing the customer, used for tracking and referencing.         |
 | first_name       | NVARCHAR(50)  | The customer's first name, as recorded in the system.                                         |
@@ -30,7 +30,7 @@ The Gold Layer is the business-level data representation, structured to support 
 
 | Column Name         | Data Type     | Description                                                                                   |
 |---------------------|---------------|-----------------------------------------------------------------------------------------------|
-| product_key         | INT           | Surrogate key uniquely identifying each product record in the product dimension table.         |
+| product_key         | NVARCHAR(32)  | Deterministic MD5 hash key uniquely identifying each product version record.                  |
 | product_id          | INT           | A unique identifier assigned to the product for internal tracking and referencing.            |
 | product_number      | NVARCHAR(50)  | A structured alphanumeric code representing the product, often used for categorization or inventory. |
 | product_name        | NVARCHAR(50)  | Descriptive name of the product, including key details such as type, color, and size.         |
@@ -40,7 +40,9 @@ The Gold Layer is the business-level data representation, structured to support 
 | maintenance_required| NVARCHAR(50)  | Indicates whether the product requires maintenance (e.g., 'Yes', 'No').                       |
 | cost                | INT           | The cost or base price of the product, measured in monetary units.                            |
 | product_line        | NVARCHAR(50)  | The specific product line or series to which the product belongs (e.g., Road, Mountain).      |
-| start_date          | DATE          | The date when the product became available for sale or use, stored in|
+| valid_from          | DATE          | The date when this product version record became valid (inclusive).                           |
+| valid_to            | DATE          | The date when this product version record ceased to be valid (exclusive, NULL if current).     |
+| is_current          | INT           | Flag indicating if the record is the current active version (1 = current, 0 = historical).     |
 
 ---
 
@@ -51,8 +53,8 @@ The Gold Layer is the business-level data representation, structured to support 
 | Column Name     | Data Type     | Description                                                                                   |
 |-----------------|---------------|-----------------------------------------------------------------------------------------------|
 | order_number    | NVARCHAR(50)  | A unique alphanumeric identifier for each sales order (e.g., 'SO54496').                      |
-| product_key     | INT           | Surrogate key linking the order to the product dimension table.                               |
-| customer_key    | INT           | Surrogate key linking the order to the customer dimension table.                              |
+| product_key     | NVARCHAR(32)  | Deterministic MD5 hash key linking the order to the product dimension table.                  |
+| customer_key    | NVARCHAR(32)  | Deterministic MD5 hash key linking the order to the customer dimension table.                 |
 | order_date      | DATE          | The date when the order was placed.                                                           |
 | shipping_date   | DATE          | The date when the order was shipped to the customer.                                          |
 | due_date        | DATE          | The date when the order payment was due.                                                      |

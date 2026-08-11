@@ -1,0 +1,12 @@
+[sqlfluff]
+dialect = tsql
+templater = dbt
+runaway_distance = 2
+max_line_length = 120
+
+[sqlfluff:indent]
+tab_width = 4
+indent_unit = space
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower

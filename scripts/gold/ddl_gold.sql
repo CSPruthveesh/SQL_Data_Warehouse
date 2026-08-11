@@ -23,7 +23,7 @@ GO
 
 CREATE VIEW gold.dim_customers AS
 SELECT
-    ROW_NUMBER() OVER (ORDER BY cst_id) AS customer_key, -- Surrogate key
+    CONVERT(NVARCHAR(32), HASHBYTES('MD5', CONCAT(UPPER(TRIM(ci.cst_key)), '||')), 2) AS customer_key, -- Deterministic surrogate key
     ci.cst_id                          AS customer_id,
     ci.cst_key                         AS customer_number,
     ci.cst_firstname                   AS first_name,
@@ -40,7 +40,19 @@ FROM silver.crm_cust_info ci
 LEFT JOIN silver.erp_cust_az12 ca
     ON ci.cst_key = ca.cid
 LEFT JOIN silver.erp_loc_a101 la
-    ON ci.cst_key = la.cid;
+    ON ci.cst_key = la.cid
+UNION ALL
+SELECT
+    CONVERT(NVARCHAR(32), HASHBYTES('MD5', 'n/a'), 2) AS customer_key,
+    -1                                 AS customer_id,
+    'n/a'                              AS customer_number,
+    'Unknown'                          AS first_name,
+    'Unknown'                          AS last_name,
+    'n/a'                              AS country,
+    'n/a'                              AS marital_status,
+    'n/a'                              AS gender,
+    NULL                               AS birthdate,
+    NULL                               AS create_date;
 GO
 
 -- =============================================================================
@@ -52,7 +64,7 @@ GO
 
 CREATE VIEW gold.dim_products AS
 SELECT
-    ROW_NUMBER() OVER (ORDER BY pn.prd_start_dt, pn.prd_key) AS product_key, -- Surrogate key
+    CONVERT(NVARCHAR(32), HASHBYTES('MD5', CONCAT(UPPER(TRIM(pn.prd_key)), '||', CAST(pn.prd_start_dt AS VARCHAR))), 2) AS product_key, -- Unique key per version
     pn.prd_id       AS product_id,
     pn.prd_key      AS product_number,
     pn.prd_nm       AS product_name,
@@ -62,11 +74,27 @@ SELECT
     pc.maintenance  AS maintenance,
     pn.prd_cost     AS cost,
     pn.prd_line     AS product_line,
-    pn.prd_start_dt AS start_date
+    pn.prd_start_dt AS valid_from,
+    pn.prd_end_dt   AS valid_to,
+    CASE WHEN pn.prd_end_dt IS NULL THEN 1 ELSE 0 END AS is_current
 FROM silver.crm_prd_info pn
 LEFT JOIN silver.erp_px_cat_g1v2 pc
     ON pn.cat_id = pc.id
-WHERE pn.prd_end_dt IS NULL; -- Filter out all historical data
+UNION ALL
+SELECT
+    CONVERT(NVARCHAR(32), HASHBYTES('MD5', 'n/a'), 2) AS product_key,
+    -1              AS product_id,
+    'n/a'           AS product_number,
+    'Unknown'       AS product_name,
+    'n/a'           AS category_id,
+    'n/a'           AS category,
+    'n/a'           AS subcategory,
+    'n/a'           AS maintenance,
+    0               AS cost,
+    'n/a'           AS product_line,
+    '1900-01-01'    AS valid_from,
+    NULL            AS valid_to,
+    1               AS is_current;
 GO
 
 -- =============================================================================
@@ -79,8 +107,8 @@ GO
 CREATE VIEW gold.fact_sales AS
 SELECT
     sd.sls_ord_num  AS order_number,
-    pr.product_key  AS product_key,
-    cu.customer_key AS customer_key,
+    COALESCE(pr.product_key, CONVERT(NVARCHAR(32), HASHBYTES('MD5', 'n/a'), 2))  AS product_key,
+    COALESCE(cu.customer_key, CONVERT(NVARCHAR(32), HASHBYTES('MD5', 'n/a'), 2)) AS customer_key,
     sd.sls_order_dt AS order_date,
     sd.sls_ship_dt  AS shipping_date,
     sd.sls_due_dt   AS due_date,
@@ -90,6 +118,7 @@ SELECT
 FROM silver.crm_sales_details sd
 LEFT JOIN gold.dim_products pr
     ON sd.sls_prd_key = pr.product_number
+    AND sd.sls_order_dt BETWEEN pr.valid_from AND COALESCE(pr.valid_to, '9999-12-31')
 LEFT JOIN gold.dim_customers cu
     ON sd.sls_cust_id = cu.customer_id;
 GO
