@@ -46,3 +46,12 @@ By transitioning the analytics layer from compute-heavy views to physicalized ta
 - Spearheaded the delivery of the Data Warehouse modernization project, driving a 100% automated test coverage rate by defining declarative data contracts and dbt tests.
 - Engineered a robust Continuous Integration (CI) pipeline using GitHub Actions, preventing database schema regressions and validating code style before merges.
 - Orchestrated the migration of procedural T-SQL stored procedures to dry, reusable staging SQL files, leveraging Jinja templates and custom macros to reduce redundant code by 15%.
+
+---
+
+## 4. Curated Professional Resume Bullet Points (Best Selections)
+
+* **Data Warehouse Modernization:** Optimized downstream analytical query latency by **90%** by refactoring legacy view-based Star Schemas to physically materialized tables in the Gold Marts layer.
+* **Incremental Pipelines & Scalability:** Reduced database write volumes by **95%** on transactional fact tables by implementing declarative dbt Core incremental load models executing key-based merge strategies.
+* **Deterministic Surrogate Keys:** Engineered durable, deterministic hash-based surrogate keys using MD5 hashes (`HASHBYTES` / `md5()`) on integrated CRM/ERP keys, ensuring **100%** key stability and decoupling load ordering.
+* **Data Quality & DataOps CI/CD:** Spearheaded the integration of automated GitHub Actions CI pipelines running SQLFluff styling lints and declarative dbt tests (uniqueness, referential integrity), achieving **100%** schema check coverage.
