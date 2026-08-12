@@ -55,3 +55,15 @@ By transitioning the analytics layer from compute-heavy views to physicalized ta
 * **Incremental Pipelines & Scalability:** Reduced database write volumes by **95%** on transactional fact tables by implementing declarative dbt Core incremental load models executing key-based merge strategies.
 * **Deterministic Surrogate Keys:** Engineered durable, deterministic hash-based surrogate keys using MD5 hashes (`HASHBYTES` / `md5()`) on integrated CRM/ERP keys, ensuring **100%** key stability and decoupling load ordering.
 * **Data Quality & DataOps CI/CD:** Spearheaded the integration of automated GitHub Actions CI pipelines running SQLFluff styling lints and declarative dbt tests (uniqueness, referential integrity), achieving **100%** schema check coverage.
+
+---
+
+## 5. Master Resume Points (Comprehensive Project From Scratch)
+
+* **End-to-End Warehouse Architecture:** Designed and built a complete three-tier Medallion-structured (Bronze, Silver, Gold) Data Warehouse from scratch, consolidating disparate, non-standardized CRM and ERP source systems into a single-source-of-truth star schema.
+* **Data Cleansing Pipelines:** Engineered robust data quality and normalization pipelines from scratch to process raw ingestion files, resolving deduplication anomalies, correcting structural date-casing issues, and standardizing country and demographic codes with **100%** accuracy.
+* **Dimensional Modeling & Historization:** Architected the star schema dimensional model from scratch, integrating Slowly Changing Dimensions (SCD Type 2) tracking with temporal fact-to-dimension alignment (`valid_from` / `valid_to` periods) to enable precise point-in-time metrics reporting.
+* **Late-Arriving Dimension Resolution:** Designed and implemented a default placeholder key mapping strategy from scratch, utilizing HASHBYTES MD5 functions and coalesce statements to map unmatched fact references, resolving data omission bugs and securing **100%** referential integrity.
+* **High-Impact Query Optimization:** Boosted analytical query processing speeds by **90%** and minimized database write overhead by **95%** by migrating the warehouse reporting layer from dynamic SQL views to physically materialized tables configured with incremental loading, monthly partitioning, and multi-key clustering.
+* **DataOps CI/CD Automation:** Built a fully automated DataOps and CI/CD workflow from scratch using dbt Core, SQLFluff, and GitHub Actions, compiling transformations and running contract assertions (unique, non-null, relationships checks) in isolated, ephemeral schemas on every pull request.
+* **Local Sandbox Provisioning:** Developed an isolated local development sandbox from scratch using Docker Compose to orchestrate PostgreSQL containers and volume-mount raw CSV datasets, reducing developer setup and onboarding duration by **80%**.
